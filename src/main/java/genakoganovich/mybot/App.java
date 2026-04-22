@@ -1,32 +1,46 @@
 package genakoganovich.mybot;
 
 import org.sikuli.script.Screen;
-import org.sikuli.script.ImagePath; // Добавили импорт ImagePath
+import org.sikuli.script.Key;
+import org.sikuli.script.ImagePath; // <-- Не забудьте этот импорт!
 
 public class App {
+
     public static void main(String[] args) {
+        String imgPath = System.getProperty("image.dir", "images");
+        ImagePath.setBundlePath(imgPath);
         
-        // 1. НАСТРОЙКА: Говорим SikuliX, где лежат наши картинки
-        // Слово "images" означает, что папка лежит рядом с корнем проекта
-        ImagePath.setBundlePath("images"); 
+        String target = "open_project.png";
         
-        System.out.println("Программа запущена! Ищу в папке: " + ImagePath.getBundlePath());
+        // 1. Ищем экран
+        Screen screen = findScreenWith(target);
+        
+        if (screen == null) {
+            System.out.println("Screen with '" + target + "' not found on any monitor.");
+            return;
+        }
 
-        Screen screen = new Screen();
-
+        // 2. Делаем работу
         try {
-            // 2. Теперь мы можем писать просто имя файла!
-            String imageName = "test.png";
-            
-            System.out.println("Жду картинку...");
-            screen.wait(imageName, 5.0);
-            
-            screen.click(imageName);
-            System.out.println("Успешно кликнул!");
-            
+            screen.click(target);
+            screen.wait(0.5);
+            screen.type("demo_project.gsp" + Key.ENTER);
         } catch (Exception e) {
-            System.out.println("\n--- ОШИБКА ---");
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
     }
+
+    // ===============================================
+    // Вспомогательный метод (наш собственный инструмент)
+    // ===============================================
+    public static Screen findScreenWith(String imageName) {
+        for (int i = 0; i < Screen.getNumberScreens(); i++) {
+            Screen s = new Screen(i);
+            if (s.exists(imageName, 1.0) != null) {
+                return s; // Сразу возвращаем найденный экран
+            }
+        }
+        return null; // Если цикл прошел и ничего не нашел
+    }
 }
+    
