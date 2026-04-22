@@ -5,19 +5,20 @@ import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Properties;
 
 public class AppLauncher {
     public static void main(String[] args) {
         try {
-            // Загружаем конфигурацию
-            Properties config = loadConfig();
+            // ВАЖНО: Инициализируем конфигурацию в самом начале
+            Config.initialize();
             
-            String baseDir = config.getProperty("gspace.base.dir", "c:\\Geomage\\gSpace");
-            String exeName = config.getProperty("gspace.exe.name", "gSpace.exe");
+            // Теперь все классы проекта могут использовать ImagePath
+            
+            String baseDir = Config.get("gspace.base.dir", "c:\\Geomage\\gSpace");
+            String exeName = Config.get("gspace.exe.name", "gSpace.exe");
+            int splashWait = Config.getInt("gspace.splash.wait", 3000);
+            int mainWait = Config.getInt("gspace.main.window.wait", 5000);
             
             System.out.println("Base directory: " + baseDir);
             
@@ -33,9 +34,9 @@ public class AppLauncher {
             App myApp = new App(appPath);
             myApp.open();
             
-            Thread.sleep(3000);
+            Thread.sleep(splashWait);
             System.out.println("Waiting for main window...");
-            Thread.sleep(5000);
+            Thread.sleep(mainWait);
             
             myApp.focus();
             Region appWindow = myApp.window();
@@ -43,6 +44,7 @@ public class AppLauncher {
             if (appWindow != null) {
                 Screen activeScreen = (Screen) appWindow.getScreen();
                 System.out.println("SUCCESS: Application on screen #" + activeScreen.getID());
+                System.out.println("Window location: " + appWindow.x + "," + appWindow.y);
             } else {
                 System.out.println("ERROR: Failed to get application window.");
             }
@@ -50,20 +52,6 @@ public class AppLauncher {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    
-    private static Properties loadConfig() {
-        Properties props = new Properties();
-        String configPath = "config.properties";
-        
-        try (FileInputStream fis = new FileInputStream(configPath)) {
-            props.load(fis);
-            System.out.println("Configuration loaded from: " + configPath);
-        } catch (IOException e) {
-            System.out.println("Config file not found, using defaults");
-        }
-        
-        return props;
     }
     
     private static String findLatestBuild(String baseDir, String exeName) {
@@ -84,7 +72,10 @@ public class AppLauncher {
             return null;
         }
         
-        System.out.println("Found " + buildDirs.length + " build(s)");
+        System.out.println("Found " + buildDirs.length + " build(s):");
+        for (File f : buildDirs) {
+            System.out.println("  - " + f.getName());
+        }
         
         Arrays.sort(buildDirs, (f1, f2) -> {
             int b1 = extractBuildNumber(f1.getName());

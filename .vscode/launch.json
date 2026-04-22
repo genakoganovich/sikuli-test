@@ -9,7 +9,8 @@
             "name": "AppLauncher",
             "request": "launch",
             "mainClass": "genakoganovich.mybot.AppLauncher",
-            "projectName": "sikuli-test"
+            "projectName": "sikuli-test",
+            "vmArgs": "-Dimage.dir=${workspaceFolder}/images"
         },
         {
             "type": "java",
