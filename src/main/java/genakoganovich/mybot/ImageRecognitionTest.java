@@ -18,14 +18,14 @@ public class ImageRecognitionTest {
             String appPath = findLatestAppPath();
             if (appPath == null) return;
 
-            App myApp = launchApplication(appPath);
-            if (myApp == null) return;
+            //App myApp = launchApplication(appPath);
+            //if (myApp == null) return;
 
             Screen appScreen = findApplicationScreen();
             if (appScreen == null) return;
 
             // Здесь начинается основная работа с найденным экраном
-            startTesting(appScreen);
+            runTests(appScreen);
 
         } catch (Exception e) {
             // Ошибки поглощаются или записываются в лог-файл (не в stdout)
@@ -59,7 +59,6 @@ public class ImageRecognitionTest {
         AppLauncher launcher = new AppLauncher();
         int totalWait = Config.getInt("gspace.splash.wait", 3000) + 
                         Config.getInt("gspace.main.window.wait", 5000);
-        
         return launcher.launch(appPath, totalWait);
     }
 
@@ -74,7 +73,15 @@ public class ImageRecognitionTest {
     /**
      * Шаг 4: Точка входа для самих тестов
      */
-    private void startTesting(Screen appScreen) {
-        // Логика тестирования элементов GUI
+     private void runTests(Screen appScreen) {
+        ImageMatcher matcher = new ImageMatcher();
+        VisualService visual = new VisualService();
+        ImageLoader loader = new ImageLoader(); // Создаем загрузчик
+
+        // Передаем все инструменты в тест
+        SeismicDataTest seismicTest = new SeismicDataTest(matcher, visual, loader);
+        boolean result = seismicTest.execute(appScreen);
+        
+        // result теперь содержит итог теста: true или false
     }
 }

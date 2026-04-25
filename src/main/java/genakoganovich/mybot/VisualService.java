@@ -1,11 +1,12 @@
 package genakoganovich.mybot;
 
-import org.sikuli.script.Match;
+import org.sikuli.script.Region; // Изменили импорт с Match на Region
 
 public class VisualService {
-    public void highlightMatch(Match match, double seconds) {
-        if (match != null) {
-            match.highlight(seconds);
+    // Теперь метод принимает Region, что позволяет подсвечивать и Match, и обычные области
+    public void highlightMatch(Region region, double seconds) {
+        if (region != null) {
+            region.highlight(seconds);
         }
     }
 }
