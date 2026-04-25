@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ImageRecognitionTest",
+            "request": "launch",
+            "mainClass": "genakoganovich.mybot.ImageRecognitionTest",
+            "projectName": "sikuli-test"
+        },
+        {
+            "type": "java",
             "name": "AppLauncher",
             "request": "launch",
             "mainClass": "genakoganovich.mybot.AppLauncher",
